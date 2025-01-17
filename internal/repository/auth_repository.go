@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/mohamedfawas/rmshop-auth-service/internal/domain"
@@ -26,12 +25,15 @@ func (r *authRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 		email,
 	).Scan(&user.ID, &user.Email, &user.PasswordHash)
 
+	// If given email is of admin's mail
 	if err == nil {
 		user.UserType = "admin"
 		return &user, nil
 	}
 
+	// Any error other than getting no row values
 	if err != sql.ErrNoRows {
+		fmt.Printf("Error getting user by email while searching for admin: %v", err)
 		return nil, err
 	}
 
@@ -42,6 +44,7 @@ func (r *authRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 	).Scan(&user.ID, &user.Email, &user.PasswordHash)
 
 	if err != nil {
+		fmt.Printf("Error getting user by email while searching for user: %v", err)
 		return nil, err
 	}
 
@@ -69,9 +72,6 @@ func (r *authRepository) BlacklistToken(ctx context.Context, token string) error
 
 	query := `INSERT INTO blacklisted_tokens (token, expires_at) VALUES ($1, $2)`
 	_, err := r.db.ExecContext(ctx, query, token, expiresAt)
-	if err != nil {
-		log.Printf("Error blacklisting token: %v", err) // Log the error
-	}
 	return err
 }
 

@@ -18,7 +18,7 @@ type Config struct {
 	JWT struct {
 		Secret        string
 		ExpiryHours   int
-		RefreshSecret string
+		RefreshSecret string // A separate secret key for signing refresh tokens
 	}
 }
 
@@ -38,9 +38,9 @@ func LoadConfig() (*Config, error) {
 	config.Database.SSLMode = getEnvOrDefault("DB_SSLMODE", "disable")
 
 	// JWT config
-	config.JWT.Secret = getEnvOrDefault("JWT_SECRET", "your-secret-key")
+	config.JWT.Secret = getEnvOrDefault("JWT_SECRET", "fawas's-secret-key")
 	config.JWT.ExpiryHours = 24
-	config.JWT.RefreshSecret = getEnvOrDefault("JWT_REFRESH_SECRET", "your-refresh-secret-key")
+	config.JWT.RefreshSecret = getEnvOrDefault("JWT_REFRESH_SECRET", "fawas's-refresh-secret-key")
 
 	return config, nil
 }
